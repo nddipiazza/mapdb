@@ -136,6 +136,8 @@ object DBMaker{
         private var _isThreadSafe = true
         private var _concurrencyScale: Int = 1.shl(CC.STORE_DIRECT_CONC_SHIFT)
         private var _cleanerHack = false
+        private var _classLoader = Thread.currentThread().contextClassLoader
+
         private var _fileMmapPreclearDisable = false
         private var _fileLockWait = 0L
         private var _fileMmapfIfSupported = false
@@ -156,6 +158,11 @@ object DBMaker{
 
         fun allocateIncrement(incrementSize:Long):Maker{
             _allocateIncrement = incrementSize;
+            return this
+        }
+
+        fun classLoader(classLoader:ClassLoader):Maker{
+            _classLoader = classLoader
             return this
         }
 
@@ -474,7 +481,7 @@ object DBMaker{
                     }
                 }
 
-            return DB(store=store, storeOpened = storeOpened, isThreadSafe = _isThreadSafe, shutdownHook = _closeOnJvmShutdown)
+            return DB(store=store, storeOpened = storeOpened, isThreadSafe = _isThreadSafe, shutdownHook = _closeOnJvmShutdown, classLoader = _classLoader )
         }
     }
 
